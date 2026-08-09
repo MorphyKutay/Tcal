@@ -64,11 +64,11 @@ static void draw_title_row(int row, const char *title) {
     addch(ACS_URCORNER);
 }
 
-static void draw_weekday_header(int row) {
+static void draw_weekday_header(int row, TcalLang lang) {
     move(row, 0);
     addch(ACS_VLINE);
     for (int c = 0; c < GRID_COLS; c++) {
-        const char *label = tcal_weekday_short(c);
+        const char *label = tcal_weekday_short(c, lang);
         int label_width = (int)utf8_display_width(label);
         int pad_total = CELL_WIDTH - label_width;
         int left_pad = pad_total / 2;
@@ -92,7 +92,7 @@ static void draw_border_row(int row, chtype left, chtype mid, chtype right) {
 }
 
 static void render_day_cell_content(char lines[2][CELL_WIDTH + 1], int day, int year, int month,
-                                     const TaskList *tasks) {
+                                     const TaskList *tasks, TcalLang lang) {
     memset(lines[0], ' ', CELL_WIDTH);
     lines[0][CELL_WIDTH] = '\0';
     memset(lines[1], ' ', CELL_WIDTH);
@@ -124,7 +124,7 @@ static void render_day_cell_content(char lines[2][CELL_WIDTH + 1], int day, int 
         memcpy(lines[1], trunc, strlen(trunc));
     } else if (total > 2) {
         char label[32];
-        snprintf(label, sizeof(label), "+%zu daha", total - 1);
+        snprintf(label, sizeof(label), lang == TCAL_LANG_EN ? "+%zu more" : "+%zu daha", total - 1);
         char trunc[CELL_WIDTH + 1];
         utf8_truncate(trunc, sizeof(trunc), label, CELL_WIDTH);
         memcpy(lines[1], trunc, strlen(trunc));
@@ -155,19 +155,20 @@ void ui_draw(const ViewState *view, const TaskList *tasks, AppMode mode, const c
 
     if (LINES < needed_height || COLS < needed_width) {
         move(0, 0);
-        addstr("Terminal cok kucuk, lutfen buyutun.");
+        addstr(view->lang == TCAL_LANG_EN ? "Terminal too small, please resize."
+                                           : "Terminal cok kucuk, lutfen buyutun.");
         refresh();
         return;
     }
 
     char title[64];
-    snprintf(title, sizeof(title), "%s %d", tcal_month_name(view->month), view->year);
+    snprintf(title, sizeof(title), "%s %d", tcal_month_name(view->month, view->lang), view->year);
 
     int row = 0;
     draw_title_row(row, title);
     row++;
 
-    draw_weekday_header(row);
+    draw_weekday_header(row, view->lang);
     row++;
 
     draw_border_row(row, ACS_LTEE, ACS_TTEE, ACS_RTEE);
@@ -197,7 +198,7 @@ void ui_draw(const ViewState *view, const TaskList *tasks, AppMode mode, const c
 
         char cell_lines[GRID_COLS][2][CELL_WIDTH + 1];
         for (int c = 0; c < GRID_COLS; c++) {
-            render_day_cell_content(cell_lines[c], weeks[w][c], view->year, view->month, tasks);
+            render_day_cell_content(cell_lines[c], weeks[w][c], view->year, view->month, tasks, view->lang);
         }
 
         for (int t = 0; t < 2; t++) {
@@ -239,7 +240,7 @@ void ui_draw(const ViewState *view, const TaskList *tasks, AppMode mode, const c
             addstr(status);
             break;
         case TCAL_MODE_INPUT:
-            addstr("Görev: ");
+            addstr(view->lang == TCAL_LANG_EN ? "Task: " : "Görev: ");
             addstr(status);
             break;
     }

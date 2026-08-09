@@ -31,10 +31,15 @@ int main(void) {
     /* 2000-01-01 is a Saturday -> Monday-indexed 5 */
     CHECK(tcal_first_weekday_of_month(2000, 1) == 5, "Jan 1 2000 is Saturday (index 5)");
 
-    CHECK(strcmp(tcal_month_name(8), "Ağustos") == 0, "month 8 name is Ağustos");
-    CHECK(strcmp(tcal_month_name(1), "Ocak") == 0, "month 1 name is Ocak");
-    CHECK(strcmp(tcal_weekday_short(0), "Pt") == 0, "weekday 0 short is Pt");
-    CHECK(strcmp(tcal_weekday_short(6), "Pz") == 0, "weekday 6 short is Pz");
+    CHECK(strcmp(tcal_month_name(8, TCAL_LANG_TR), "Ağustos") == 0, "month 8 name (tr) is Ağustos");
+    CHECK(strcmp(tcal_month_name(1, TCAL_LANG_TR), "Ocak") == 0, "month 1 name (tr) is Ocak");
+    CHECK(strcmp(tcal_weekday_short(0, TCAL_LANG_TR), "Pt") == 0, "weekday 0 short (tr) is Pt");
+    CHECK(strcmp(tcal_weekday_short(6, TCAL_LANG_TR), "Pz") == 0, "weekday 6 short (tr) is Pz");
+
+    CHECK(strcmp(tcal_month_name(8, TCAL_LANG_EN), "August") == 0, "month 8 name (en) is August");
+    CHECK(strcmp(tcal_month_name(1, TCAL_LANG_EN), "January") == 0, "month 1 name (en) is January");
+    CHECK(strcmp(tcal_weekday_short(0, TCAL_LANG_EN), "Mo") == 0, "weekday 0 short (en) is Mo");
+    CHECK(strcmp(tcal_weekday_short(6, TCAL_LANG_EN), "Su") == 0, "weekday 6 short (en) is Su");
 
     {
         int y = 2026, m = 1;

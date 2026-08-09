@@ -1,6 +1,7 @@
 #ifndef TCAL_UI_H
 #define TCAL_UI_H
 
+#include "calendar.h"
 #include "tasks.h"
 
 typedef enum {
@@ -15,6 +16,7 @@ typedef struct {
     int sel_day;  /* 1..days_in_month(year, month) */
     int sel_task; /* -1 if the day itself is selected, else 0-based index of
                      the selected task within sel_day's tasks (in list order) */
+    TcalLang lang;
 } ViewState;
 
 void ui_init(void);

@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
@@ -112,9 +113,14 @@ static void handle_command(char *cmd_buf, ViewState *view, TaskList *tasks,
 }
 
 int main(void) {
+    const char *lang_env = getenv("TCAL_LANG");
+    TcalLang lang = (lang_env != NULL && strcmp(lang_env, "en") == 0) ? TCAL_LANG_EN : TCAL_LANG_TR;
+
     char data_path[512];
     if (tcal_data_path(data_path, sizeof(data_path)) != 0) {
-        fprintf(stderr, "tcal: veri dosyasi yolu belirlenemedi (HOME ayarli mi?)\n");
+        fprintf(stderr, lang == TCAL_LANG_EN
+                             ? "tcal: could not determine data file path (is HOME set?)\n"
+                             : "tcal: veri dosyasi yolu belirlenemedi (HOME ayarli mi?)\n");
         return 1;
     }
 
@@ -130,6 +136,7 @@ int main(void) {
     view.month = lt->tm_mon + 1;
     view.sel_day = lt->tm_mday;
     view.sel_task = -1;
+    view.lang = lang;
 
     ui_init();
 
@@ -140,7 +147,8 @@ int main(void) {
     size_t input_len = 0;
     int should_quit = 0;
 
-    const char *normal_hint = "hjkl: gez  p/n: ay  ':' komut";
+    const char *normal_hint = lang == TCAL_LANG_EN ? "hjkl: move  p/n: month  ':' command"
+                                                     : "hjkl: gez  p/n: ay  ':' komut";
 
     while (!should_quit) {
         const char *status;
