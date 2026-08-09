@@ -4,8 +4,6 @@ A terminal calendar with vim-style modal keybindings, built with C and ncurses.
 Navigate a month grid with `hjkl`, drop into command mode with `:`, and manage
 tasks per day without leaving the keyboard.
 
-![tcal demo](demo.gif)
-
 ![tcal demo (English)](demo-en.gif)
 
 ## Features
