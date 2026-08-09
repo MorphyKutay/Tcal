@@ -1,4 +1,4 @@
-# tcal
+# TCal
 
 A terminal calendar with vim-style modal keybindings, built with C and ncurses.
 Navigate a month grid with `hjkl`, drop into command mode with `:`, and manage
