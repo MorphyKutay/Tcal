@@ -243,6 +243,9 @@ void ui_draw(const ViewState *view, const TaskList *tasks, AppMode mode, const c
             addstr(view->lang == TCAL_LANG_EN ? "Task: " : "Görev: ");
             addstr(status);
             break;
+        case TCAL_MODE_VIEW:
+            addstr(status);
+            break;
     }
 
     refresh();

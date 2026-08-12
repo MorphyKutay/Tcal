@@ -7,7 +7,8 @@
 typedef enum {
     TCAL_MODE_NORMAL,
     TCAL_MODE_COMMAND,
-    TCAL_MODE_INPUT
+    TCAL_MODE_INPUT,
+    TCAL_MODE_VIEW,
 } AppMode;
 
 typedef struct {

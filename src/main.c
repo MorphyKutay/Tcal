@@ -77,11 +77,31 @@ static void move_up(ViewState *view) {
 }
 
 static void handle_command(char *cmd_buf, ViewState *view, TaskList *tasks,
-                            const char *data_path, AppMode *mode, char *input_buf,
+                            const char *data_path, AppMode *mode, char *input_buf, char *view_buf,
                             int *should_quit) {
     if (strcmp(cmd_buf, "e") == 0) {
         *mode = TCAL_MODE_INPUT;
         input_buf[0] = '\0';
+        return;
+    }
+
+    if (strcmp(cmd_buf, "v") == 0) {
+
+        if (view->sel_task >= 0) {
+            char date[TCAL_DATE_LEN + 1];
+            current_date_str(view, date, sizeof(date));
+            int idx = tasklist_nth_for_date(tasks, date, (size_t)view->sel_task);
+
+            if (idx >= 0) {
+                strncpy(view_buf, tasks->items[idx].text, INPUT_BUF_SIZE - 1);
+                view_buf[INPUT_BUF_SIZE -1 ] = '\0';
+                *mode = TCAL_MODE_VIEW;
+                return;
+            }
+
+        }
+
+        *mode = TCAL_MODE_NORMAL;
         return;
     }
 
@@ -143,6 +163,7 @@ int main(void) {
     AppMode mode = TCAL_MODE_NORMAL;
     char cmd_buf[CMD_BUF_SIZE] = "";
     char input_buf[INPUT_BUF_SIZE] = "";
+    char view_buf[INPUT_BUF_SIZE] = "";
     size_t cmd_len = 0;
     size_t input_len = 0;
     int should_quit = 0;
@@ -156,6 +177,7 @@ int main(void) {
             case TCAL_MODE_NORMAL: status = normal_hint; break;
             case TCAL_MODE_COMMAND: status = cmd_buf; break;
             case TCAL_MODE_INPUT: status = input_buf; break;
+            case TCAL_MODE_VIEW: status = view_buf; break;
             default: status = ""; break;
         }
         ui_draw(&view, &tasks, mode, status);
@@ -183,7 +205,7 @@ int main(void) {
                 cmd_buf[0] = '\0';
                 cmd_len = 0;
             } else if (ch == '\n' || ch == '\r' || ch == KEY_ENTER) {
-                handle_command(cmd_buf, &view, &tasks, data_path, &mode, input_buf, &should_quit);
+                handle_command(cmd_buf, &view, &tasks, data_path, &mode, input_buf, view_buf,&should_quit);
                 cmd_buf[0] = '\0';
                 cmd_len = 0;
             } else if (ch == KEY_BACKSPACE || ch == 127 || ch == 8) {
@@ -219,6 +241,11 @@ int main(void) {
                 input_buf[input_len++] = (char)ch;
                 input_buf[input_len] = '\0';
             }
+        }
+
+        else if (mode == TCAL_MODE_VIEW) {
+            mode = TCAL_MODE_NORMAL;
+            view_buf[0] = '\0';
         }
     }
 
