@@ -11,7 +11,8 @@ tasks per day without leaving the keyboard.
 - Monthly grid view, week starts on Monday, shared-border table layout
 - vim-style navigation: `hjkl` / arrow keys move between days and, within a
   day, between its tasks
-- Command mode (`:`) for adding (`:e`), deleting (`:d`), and quitting (`:q`)
+- Command mode (`:`) for adding (`:e`), viewing full text (`:v`), deleting
+  (`:d`), and quitting (`:q`)
 - Tasks persist to `~/.local/share/tcal/tasks.txt`
 - Turkish by default, English via `TCAL_LANG=en`
 
@@ -39,6 +40,7 @@ make test
 | `p` / `n`   | Previous / next month                                |
 | `:`         | Enter command mode                                   |
 | `:e`        | Add a task to the selected day (opens a text prompt) |
+| `:v`        | View the selected task's full text (untruncated)     |
 | `:d`        | Delete the selected task                             |
 | `:q`        | Save and quit                                        |
 | `Esc`       | Cancel command / input mode                          |
