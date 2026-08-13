@@ -9,6 +9,7 @@
 typedef struct {
     char date[TCAL_DATE_LEN + 1];
     char text[TCAL_TEXT_MAX];
+   int done;
 } Task;
 
 typedef struct {

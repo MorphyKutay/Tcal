@@ -9,6 +9,7 @@ typedef enum {
     TCAL_MODE_COMMAND,
     TCAL_MODE_INPUT,
     TCAL_MODE_VIEW,
+    TCAL_MODE_DONE,
 } AppMode;
 
 typedef struct {

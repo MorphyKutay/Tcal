@@ -109,7 +109,8 @@ static void render_day_cell_content(char lines[2][CELL_WIDTH + 1], int day, int 
     if (total >= 1) {
         int idx0 = tasklist_nth_for_date(tasks, date, 0);
         char label[TCAL_TEXT_MAX + 4];
-        snprintf(label, sizeof(label), "*%s", tasks->items[idx0].text);
+        const char *marker0 = tasks->items[idx0].done ? "+" : "*";
+        snprintf(label, sizeof(label), "%s%s", marker0, tasks->items[idx0].text);
         char trunc[CELL_WIDTH + 1];
         utf8_truncate(trunc, sizeof(trunc), label, CELL_WIDTH);
         memcpy(lines[0], trunc, strlen(trunc));
@@ -118,7 +119,8 @@ static void render_day_cell_content(char lines[2][CELL_WIDTH + 1], int day, int 
     if (total == 2) {
         int idx1 = tasklist_nth_for_date(tasks, date, 1);
         char label[TCAL_TEXT_MAX + 4];
-        snprintf(label, sizeof(label), "*%s", tasks->items[idx1].text);
+        const char *marker1 = tasks->items[idx1].done ? "+" : "*";
+        snprintf(label, sizeof(label), "%s%s", marker1, tasks->items[idx1].text);
         char trunc[CELL_WIDTH + 1];
         utf8_truncate(trunc, sizeof(trunc), label, CELL_WIDTH);
         memcpy(lines[1], trunc, strlen(trunc));
@@ -244,6 +246,9 @@ void ui_draw(const ViewState *view, const TaskList *tasks, AppMode mode, const c
             addstr(status);
             break;
         case TCAL_MODE_VIEW:
+            addstr(status);
+            break;
+        case TCAL_MODE_DONE:
             addstr(status);
             break;
     }

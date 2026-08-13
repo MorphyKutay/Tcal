@@ -46,6 +46,7 @@ int tasklist_add(TaskList *list, const char *date, const char *text) {
     t->date[TCAL_DATE_LEN] = '\0';
     strncpy(t->text, text, TCAL_TEXT_MAX - 1);
     t->text[TCAL_TEXT_MAX - 1] = '\0';
+    t->done = 0;
     list->count++;
     return (int)(list->count - 1);
 }
@@ -92,7 +93,7 @@ int tasklist_load(TaskList *list, const char *path) {
         return -1;
     }
 
-    char line[TCAL_DATE_LEN + 1 + TCAL_TEXT_MAX + 2];
+    char line[TCAL_DATE_LEN + 1 + TCAL_TEXT_MAX + 4];
     while (fgets(line, sizeof(line), f) != NULL) {
         size_t len = strlen(line);
         while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r')) {
@@ -107,7 +108,16 @@ int tasklist_load(TaskList *list, const char *path) {
         line[TCAL_DATE_LEN] = '\0';
         const char *date = line;
         const char *text = line + TCAL_DATE_LEN + 1;
-        tasklist_add(list, date, text);
+        int done = 0;
+        if  (strlen(text) >= 2 && (text[0] == '0' || text[0] == '1') && text[1] == '|') {
+            done = (text[0] == '1');
+            text += 2;
+        }
+        int idx = tasklist_add(list, date, text);
+
+        if (idx >= 0) {
+            list->items[idx].done = done;
+        }
     }
 
     fclose(f);
@@ -120,7 +130,8 @@ int tasklist_save(const TaskList *list, const char *path) {
         return -1;
     }
     for (size_t i = 0; i < list->count; i++) {
-        fprintf(f, "%s|%s\n", list->items[i].date, list->items[i].text);
+        //fprintf(f, "%s|%s\n", list->items[i].date, list->items[i].text);
+        fprintf(f, "%s|%d|%s\n", list->items[i].date, list->items[i].done ? 1 : 0, list->items[i].text);
     }
     fclose(f);
     return 0;

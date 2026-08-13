@@ -77,7 +77,7 @@ static void move_up(ViewState *view) {
 }
 
 static void handle_command(char *cmd_buf, ViewState *view, TaskList *tasks,
-                            const char *data_path, AppMode *mode, char *input_buf, char *view_buf,
+                            const char *data_path, AppMode *mode, char *input_buf, char *view_buf,char *done_buf,
                             int *should_quit) {
     if (strcmp(cmd_buf, "e") == 0) {
         *mode = TCAL_MODE_INPUT;
@@ -101,6 +101,20 @@ static void handle_command(char *cmd_buf, ViewState *view, TaskList *tasks,
 
         }
 
+        *mode = TCAL_MODE_NORMAL;
+        return;
+    }
+
+    if (strcmp(cmd_buf,"l") == 0) {
+        if (view->sel_task >= 0) {
+            char date[TCAL_DATE_LEN + 1];
+            current_date_str(view, date, sizeof(date));
+            int idx = tasklist_nth_for_date(tasks, date, (size_t)view->sel_task);
+            if (idx >= 0) {
+                tasks->items[idx].done = !tasks->items[idx].done;
+                tasklist_save(tasks,data_path);
+            }
+        }
         *mode = TCAL_MODE_NORMAL;
         return;
     }
@@ -164,6 +178,7 @@ int main(void) {
     char cmd_buf[CMD_BUF_SIZE] = "";
     char input_buf[INPUT_BUF_SIZE] = "";
     char view_buf[INPUT_BUF_SIZE] = "";
+    char done_buf[INPUT_BUF_SIZE] = "";
     size_t cmd_len = 0;
     size_t input_len = 0;
     int should_quit = 0;
@@ -178,6 +193,7 @@ int main(void) {
             case TCAL_MODE_COMMAND: status = cmd_buf; break;
             case TCAL_MODE_INPUT: status = input_buf; break;
             case TCAL_MODE_VIEW: status = view_buf; break;
+            case TCAL_MODE_DONE: status = done_buf; break;
             default: status = ""; break;
         }
         ui_draw(&view, &tasks, mode, status);
@@ -205,7 +221,7 @@ int main(void) {
                 cmd_buf[0] = '\0';
                 cmd_len = 0;
             } else if (ch == '\n' || ch == '\r' || ch == KEY_ENTER) {
-                handle_command(cmd_buf, &view, &tasks, data_path, &mode, input_buf, view_buf,&should_quit);
+                handle_command(cmd_buf, &view, &tasks, data_path, &mode, input_buf, view_buf,done_buf,&should_quit);
                 cmd_buf[0] = '\0';
                 cmd_len = 0;
             } else if (ch == KEY_BACKSPACE || ch == 127 || ch == 8) {
