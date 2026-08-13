@@ -11,8 +11,9 @@ tasks per day without leaving the keyboard.
 - Monthly grid view, week starts on Monday, shared-border table layout
 - vim-style navigation: `hjkl` / arrow keys move between days and, within a
   day, between its tasks
-- Command mode (`:`) for adding (`:e`), viewing full text (`:v`), deleting
-  (`:d`), and quitting (`:q`)
+- Command mode (`:`) for adding (`:e`), viewing full text (`:v`), toggling
+  done (`:l`), deleting (`:d`), and quitting (`:q`)
+- Completed tasks are marked with a `+` in the calendar grid
 - Tasks persist to `~/.local/share/tcal/tasks.txt`
 - Turkish by default, English via `TCAL_LANG=en`
 
@@ -41,6 +42,7 @@ make test
 | `:`         | Enter command mode                                   |
 | `:e`        | Add a task to the selected day (opens a text prompt) |
 | `:v`        | View the selected task's full text (untruncated)     |
+| `:l`        | Toggle the selected task's done status (shown as `+`) |
 | `:d`        | Delete the selected task                             |
 | `:q`        | Save and quit                                        |
 | `Esc`       | Cancel command / input mode                          |
@@ -67,4 +69,4 @@ docs/superpowers/ design doc
 ## Data
 
 Tasks are stored as plain text at `~/.local/share/tcal/tasks.txt`, one per
-line: `YYYY-MM-DD|task text`.
+line: `YYYY-MM-DD|0 or 1|task text` (the middle field is the done status).
