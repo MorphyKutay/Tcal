@@ -70,3 +70,8 @@ docs/superpowers/ design doc
 
 Tasks are stored as plain text at `~/.local/share/tcal/tasks.txt`, one per
 line: `YYYY-MM-DD|0 or 1|task text` (the middle field is the done status).
+
+## License
+
+This project is licensed under the GNU General Public License v3.0.
+See the [LICENSE](LICENSE) file for details.
